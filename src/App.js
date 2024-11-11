@@ -41,13 +41,18 @@ function MapWithClick({ sendCoordinates }) {
 function App() {
   const [mode, setMode] = useState("future"); // 기본 모드 설정
   const [markers, setMarkers] = useState([]); // 서버에서 반환된 위치 저장
+  const [time, setTime] = useState(""); // 입력받은 시간을 저장하는 상태
 
   // 좌표를 서버로 전송하는 함수
   const sendCoordinates = useCallback((lat, lng) => {
+    // 시간을 포맷하여 분과 초를 00으로 설정
+    const formattedTime = time ? `${time.slice(0, 16)}:00` : "";
+
     axios.post("http://localhost:8000/api/predict/", {
       latitude: lat,
       longitude: lng,
       direction: mode, // mode 값 사용
+      time: formattedTime, // 포맷된 시간 사용
     })
     .then(response => {
       console.log("서버 응답:", response.data);
@@ -57,11 +62,16 @@ function App() {
     .catch(error => {
       console.error("서버 오류:", error);
     });
-  }, [mode]); // mode 상태가 변경될 때마다 함수가 업데이트되도록 설정
+  }, [mode, time]); // mode와 time 상태가 변경될 때마다 함수가 업데이트되도록 설정
 
   // 모드 토글 함수
   const toggleMode = () => {
     setMode(prevMode => (prevMode === "future" ? "past" : "future"));
+  };
+
+  // 시간 입력 핸들러
+  const handleTimeChange = (event) => {
+    setTime(event.target.value);
   };
 
   return (
@@ -82,11 +92,15 @@ function App() {
         )}
       </MapContainer>
 
-      {/* 우측 상단 모드 토글 버튼 */}
-      <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 1000 }}>
-        <button onClick={toggleMode} style={{ marginRight: '10px' }}>
-          {mode === "future" ? "미래" : "과거"}
-        </button>
+      {/* 우측 상단 모드 토글 버튼과 시간 입력 필드 */}
+      <div style={{ position: 'absolute', top: '80px', left: '10px', zIndex: 1000 }}>
+        <input
+          type="datetime-local"
+          value={time}
+          onChange={handleTimeChange}
+          placeholder="시간 입력"
+          style={{ padding: '5px', marginTop: '10px', width: '150px' }}
+        />
       </div>
     </div>
   );
