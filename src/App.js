@@ -12,10 +12,10 @@ import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 const defaultIcon = L.icon({
   iconUrl: markerIcon,
   shadowUrl: markerShadow,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
+  iconSize: [15, 25], // 마커 크기를 더 작게 설정
+  iconAnchor: [7, 25],
+  popupAnchor: [1, -20],
+  shadowSize: [25, 25]
 });
 
 L.Marker.prototype.options.icon = defaultIcon;
